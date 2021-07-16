@@ -20,13 +20,22 @@ fn bacon() -> String {
 
 #[post("/upload", format = "plain", data = "<data>")]
 fn upload(data: Data) -> Result<String, std::io::Error> {
-    data.stream_to_file("/tmp/data.txt")
-        .map(|num_bytes| format!("Wrote {} bytes out to file!", num_bytes))
+    data.stream_to_file("/tmp/data.txt").map(|num_bytes| {
+        format!(
+            "Wrote {} bytes out to file! {} ",
+            num_bytes,
+            num_bytes.to_string()
+        )
+    })
 }
 
 #[get("/greetz/<name>/<age>")]
 fn greetz(name: String, age: u8) -> String {
-    format!("Greetz, {} year old named {}!", age, name)
+    if name == "andre" {
+        format!("Greetz, {} year old named {}! You are awesome!!", age, name)
+    } else {
+        format!("Greetz, {} year old named {}!", age, name)
+    }
 }
 
 #[get("/ofage/<name>/<age>")]
@@ -44,8 +53,23 @@ fn ofage(name: String, age: u8) -> String {
     }
 }
 
+#[get("/new/<name>/<age>")]
+fn new(name: String, age: u8) -> String {
+    if age > 18 {
+        format!(
+            "Welcome older, {}, your age {} means you can view this content!",
+            name, age
+        )
+    } else {
+        format!(
+            "Sorry newer, {}, you are not the right age, since you are only {} years old!",
+            name, age
+        )
+    }
+}
+
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, greetz, upload, bacon, ofage])
+        .mount("/", routes![index, greetz, upload, bacon, ofage, new])
         .launch();
 }
