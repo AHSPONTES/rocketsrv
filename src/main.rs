@@ -20,13 +20,8 @@ fn bacon() -> String {
 
 #[post("/upload", format = "plain", data = "<data>")]
 fn upload(data: Data) -> Result<String, std::io::Error> {
-    data.stream_to_file("/tmp/data.txt").map(|num_bytes| {
-        format!(
-            "Wrote {} bytes out to file! {} ",
-            num_bytes,
-            num_bytes.to_string()
-        )
-    })
+    data.stream_to_file("/tmp/data.txt")
+        .map(|num_bytes| format!("Wrote {} bytes out to file!", num_bytes))
 }
 
 #[get("/greetz/<name>/<age>")]
